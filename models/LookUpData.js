@@ -2,12 +2,15 @@ const {Sequelize , DataTypes} = require('sequelize')
 const Company = require('./Company')
 const User = require('./User')
 const LookupTable = require('./LookUpTable')
+const connectionConfig = require('../configuration/config')
 
+const sequelize = new Sequelize(connectionConfig.database,
+    connectionConfig.username, connectionConfig.password, connectionConfig.options)
 
-const sequelize = new Sequelize("QmmaTechv2" , "ali" , "foo" , {
-    dialect : 'mssql',
-    host : 'localhost'
-})
+// const sequelize = new Sequelize("QmmaTechv2" , "ali" , "foo" , {
+//     dialect : 'mssql',
+//     host : 'localhost'
+// })
 
 const LookUpData = sequelize.define("LookUpData" , {
     LookupDataID : {
@@ -56,7 +59,7 @@ LookupTable.hasOne(LookUpData , {
 
 LookUpData.sync()
     .then(() => console.log("lookUpData table Synced"))
-    .catch(err => console.log('error while syncing lookUpData table ' + err))
+    .catch(err => console.log('error while syncing lookUpData table ' + JSON.stringify(err)))
 
 
 module.exports = LookUpData

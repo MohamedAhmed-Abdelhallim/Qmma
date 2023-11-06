@@ -1,11 +1,15 @@
 const {Sequelize,DataTypes} = require('sequelize')
 const Company = require('./Company')
 const User = require('./User')
-const sequelize = new Sequelize("QmmaTechv2" , "ali" , "foo" , {
-    dialect : 'mssql',
-    host : 'localhost',
-    logging : false
-})
+const connectionConfig = require('../configuration/config')
+
+const sequelize = new Sequelize(connectionConfig.database,
+    connectionConfig.username, connectionConfig.password, connectionConfig.options)
+// const sequelize = new Sequelize("QmmaTechv2" , "ali" , "foo" , {
+//     dialect : 'mssql',
+//     host : 'localhost',
+//     logging : false
+// })
 
 const Skill = sequelize.define("Skill" , {
     SkillID : {

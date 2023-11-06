@@ -1,11 +1,11 @@
 const {Sequelize , DataTypes} = require('sequelize')
 const Company = require('./Company')
 const User = require('./User')
+const connectionConfig = require('../configuration/config')
 
-const sequelize = new Sequelize("QmmaTechv2" , "ali" , "foo" , {
-    dialect : 'mssql',
-    host : 'localhost'
-}) 
+const sequelize = new Sequelize(connectionConfig.database,
+    connectionConfig.username, connectionConfig.password, connectionConfig.options)
+
 
 const lookUpTable = sequelize.define("lookUpTable" , {
     LookupTableID : {
@@ -46,7 +46,7 @@ User.hasOne(lookUpTable,{
 lookUpTable.sync()
     .then(() => console.log("lookUpTable synced"))
     .catch(err =>{
-        console.log("lookUpTable error while syncing" + err)
+        console.log("lookUpTable error while syncing" + JSON.stringify(err))
     })
 
 

@@ -1,7 +1,8 @@
 const User = require('../models/User')
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const config = require('../configuration/config')
+// const jwt = require('jsonwebtoken')
+// const config = require('../configuration/config')
+const jwtControllers = require('../helpers/auth')
 
 const create = async (req, res) => {
     const { creationUserID } = req.body
@@ -24,11 +25,11 @@ const create = async (req, res) => {
     } else res.status(403).send('Not Authorized')
 }
 
-const createAdmin = async(req,res)=>{
+const createAdmin = async (req, res) => {
     let adminUser = req.body
     const salt = await bcrypt.genSalt();
     adminUser.UserPassword = await bcrypt.hash(adminUser.UserPassword, salt)
-     adminUser= await User.create(req.body)
+    adminUser = await User.create(req.body)
     res.status(200).send(adminUser)
 }
 
@@ -53,13 +54,13 @@ const findAll = async (req, res) => {
 
 const remove = async (req, res) => {
     try {
-        if(!req.body.userID) throw 3
+        if (!req.body.userID) throw 3
         const user = await User.destroy({
-            where : {
-                userID : req.body.userID
+            where: {
+                userID: req.body.userID
             }
         })
-        if(user) res.status(200).send('user deleted')
+        if (user) res.status(200).send('user deleted')
         else res.status(400).send("the requested user is not exist")
     } catch (error) {
         console.log(error)
@@ -84,16 +85,17 @@ const login = async (req, res) => {
     if (user == null) res.status(400).send("user not found")
     else {
         const auth = await bcrypt.compare(req.body.password, user.UserPassword)
-        if (auth) res.status(200).send(user)
+        if (auth) {
+            const token = jwtControllers.createToken(user.UserName)
+            console.log(token)
+            //user = {...user , {token : token}}
+            res.status(200).send(user)
+        }
         else res.status(400).send(' Incorrect Password ')
     }
 }
 
-const createToken = (id) => {
-    return jwt.sign({ id }, config.jwtSecret, {
-        expiresIn: config.jwtMaxAge
-    })
-}
+
 
 const errorHandler = (error) => {
     if (error.hasOwnProperty('name') && error.name === 'SequelizeForeignKeyConstraintError')

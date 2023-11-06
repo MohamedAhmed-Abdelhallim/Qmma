@@ -56,6 +56,11 @@ Company.hasOne(User,{
     }
 })
 
+const queryInterface = sequelize.getQueryInterface();
+queryInterface.addColumn('Users','currentStatus',{
+    type : DataTypes.STRING(300)
+}).then(() => 'new column added').catch(err => console.log(err))
+
 User.sync()
     .then(() => {
         console.log("User Table synced")
