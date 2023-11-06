@@ -29,16 +29,18 @@ const lookUpTableRoutes = require('./routes/lookUpTableRoutes')
 
 const app = express()
 const corsOptions = {
-    origin : "http://localhost:8081"
+    //origin : "http://localhost:8081"
+    origin : true,
+    Credential : true
 }
 app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({extended : true}))
 
 //routes
-app.use('/user' , userRoutes)
-app.use('/company' , companyRoutes)
-app.use('/lookuptable' , lookUpTableRoutes)
+app.use('/api/user' , userRoutes)
+app.use('/api/company' , companyRoutes)
+app.use('/api/lookuptable' , lookUpTableRoutes)
 // app.use('/lookupdata' , lookUpDataRoutes)
 // app.use('/skill' , skillRoutes)
 // app.use('/userSkill' , userSkillRoutes)
