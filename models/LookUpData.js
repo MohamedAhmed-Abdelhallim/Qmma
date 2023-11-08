@@ -7,16 +7,12 @@ const connectionConfig = require('../configuration/config')
 const sequelize = new Sequelize(connectionConfig.database,
     connectionConfig.username, connectionConfig.password, connectionConfig.options)
 
-// const sequelize = new Sequelize("QmmaTechv2" , "ali" , "foo" , {
-//     dialect : 'mssql',
-//     host : 'localhost'
-// })
-
 const LookUpData = sequelize.define("LookUpData" , {
     LookupDataID : {
         type : DataTypes.INTEGER,
         primaryKey : true,
-        allowNull : false
+        allowNull : false,
+        autoIncrement : true
     },
     WorkSpaceID : DataTypes.INTEGER,
     LookupDataNameArabic : DataTypes.STRING(300),
@@ -37,18 +33,18 @@ Company.hasOne(LookUpData , {
     onDelete : "NO ACTION"
 })
 
-User.hasOne(LookUpData , {
-    foreignKey :{
-        name : "CreatedByUerID",
-        allowNull : false
-    },
-    onDelete : "NO ACTION"
-})
+// User.hasOne(LookUpData , {
+//     foreignKey :{
+//         name : "CreatedByUerID",
+//         allowNull : false
+//     },
+//     onDelete : "NO ACTION"
+// })
 
-User.hasOne(LookUpData , {
-    foreignKey : "UpdatedByUserD",
-    onDelete : "NO ACTION"
-})
+// User.hasOne(LookUpData , {
+//     foreignKey : "UpdatedByUserD",
+//     onDelete : "NO ACTION"
+// })
 
 LookupTable.hasOne(LookUpData , {
     foreignKey : {
@@ -56,6 +52,7 @@ LookupTable.hasOne(LookUpData , {
         allowNull : false
     }
 })
+
 
 LookUpData.sync()
     .then(() => console.log("lookUpData table Synced"))

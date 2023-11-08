@@ -1,5 +1,6 @@
 const {Sequelize , DataTypes } = require('sequelize')
 const Company = require('./Company')
+const LookUpData = require('./LookUpData')
 const connectionConfig = require('../configuration/config')
 
 const sequelize = new Sequelize(connectionConfig.database,
@@ -56,10 +57,25 @@ Company.hasOne(User,{
     }
 })
 
-const queryInterface = sequelize.getQueryInterface();
-queryInterface.addColumn('Users','currentStatus',{
-    type : DataTypes.STRING(300)
-}).then(() => 'new column added').catch(err => console.log(err))
+Company.hasOne(User,{
+    foreignKey :{
+        name : 'LastLoggedInCompany'
+    },
+    onDelete : "NO ACTION"
+})
+
+LookUpData.hasOne(User,{
+    foreignKey :{
+        name : 'currentStatus',
+        allowNull : true,
+    },
+    onDelete : "NO ACTION"
+})
+
+// const queryInterface = sequelize.getQueryInterface();
+// queryInterface.addColumn('Users','currentStatus',{
+//     type : DataTypes.STRING(300)
+// }).then(() => 'new column added').catch(err => console.log(err))
 
 User.sync()
     .then(() => {

@@ -13,7 +13,8 @@ const Company = sequelize.define("company" , {
     CompanyID : {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement:true
     },
     ParentCompanyID  : DataTypes.INTEGER,
     NameArabic : DataTypes.STRING(300),

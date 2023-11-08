@@ -28,20 +28,20 @@ Company.hasOne(lookUpTable , {
     onDelete : "NO ACTION"
 })
 
-lookUpTable.belongsTo(User,{
-    foreignKey : {
-        name : "CreatedBY",
-        allowNull : false
-    },
-    as : "createdByUser"
-})
+// User.hasOne(lookUpTable,{
+//     foreignKey : {
+//         name : "CreatedBY",
+//         allowNull : false
+//     },
+//     as : "createdByUser"
+// })
 
-User.hasOne(lookUpTable,{
-    foreignKey :{
-        name : "UpdatedByUserD",
-    },
-    onDelete : "NO ACTION"
-})
+// User.hasOne(lookUpTable,{
+//     foreignKey :{
+//         name : "UpdatedByUserD",
+//     },
+//     onDelete : "NO ACTION"
+// })
 
 lookUpTable.sync()
     .then(() => console.log("lookUpTable synced"))
