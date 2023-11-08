@@ -1,7 +1,6 @@
 const User = require('../models/User')
+const Company = require('../models/Company')
 const bcrypt = require('bcrypt')
-// const jwt = require('jsonwebtoken')
-// const config = require('../configuration/config')
 const jwtControllers = require('../helpers/auth')
 
 const create = async (req, res) => {
@@ -81,6 +80,7 @@ const login = async (req, res) => {
         where: {
             UserName: req.body.UserName
         },
+        attributes :['NameArabic' , 'NameEnglish' , 'UserPassword' , 'isAdmin']
     })
     if (user == null) res.status(400).send("user not found")
     else {
@@ -88,8 +88,14 @@ const login = async (req, res) => {
         if (auth) {
             const token = jwtControllers.createToken(user.UserName)
             console.log(token)
-            //user = {...user , {token : token}}
-            res.status(200).send(user)
+            let companies = null;
+            if(user.isAdmin){
+                 companies = await Company.findAll({
+                    attributes : ['NameArabic' , 'NameEnglish' , 'CompanyID']
+                })
+            }
+            console.log(JSON.stringify(companies))
+            res.status(200).json([user , companies])
         }
         else res.status(400).send(' Incorrect Password ')
     }
