@@ -1,5 +1,7 @@
 const User = require('../models/User')
 const Company = require('../models/Company')
+const UserChannel = require('../models/UserChannel')
+const userHelperFun = require('../helpers/user')
 const bcrypt = require('bcrypt')
 const jwtControllers = require('../helpers/auth')
 
@@ -68,19 +70,36 @@ const remove = async (req, res) => {
     }
 }
 
-// const register = async(req,res) =>{
-//     const user = await User.findByPk(req.body.id)
-//     if(user){
+const update = async (req, res) => {
+    try {
+        const {userID}  = req.body
+        if(req.body.hasOwnProperty('UserPassword')){
+            let userPassword = req.body.UserPassword
+            userPassword = await jwtControllers.hashPassword(userPassword)
+            req.body.UserPassword = userPassword
+            console.log(req.body)
+        }
+        const user = await User.update(req.body, {
+                     where :{
+                        UserID : userID
+                    }
+              }
+        )
+        if(user[0] === 0) res.status(400).send('Not Found')
+        else res.status(200).send('User Successfully updated')
+    } catch (error) {
+        console.log(error)
+        res.status(500).send('Internal Server Error')
+    }
+}
 
-//     }
-// }
 
 const login = async (req, res) => {
     const user = await User.findOne({
         where: {
             UserName: req.body.UserName
         },
-        attributes :['NameArabic' , 'NameEnglish' , 'UserPassword' , 'isAdmin']
+        attributes: ['NameArabic', 'NameEnglish', 'UserPassword', 'isAdmin']
     })
     if (user == null) res.status(400).send("user not found")
     else {
@@ -89,17 +108,77 @@ const login = async (req, res) => {
             const token = jwtControllers.createToken(user.UserName)
             console.log(token)
             let companies = null;
-            if(user.isAdmin){
-                 companies = await Company.findAll({
-                    attributes : ['NameArabic' , 'NameEnglish' , 'CompanyID']
+            if (user.isAdmin) {
+                companies = await Company.findAll({
+                    attributes: ['NameArabic', 'NameEnglish', 'CompanyID']
                 })
             }
             console.log(JSON.stringify(companies))
-            res.status(200).json([user , companies])
+            res.status(200).json([user, companies])
         }
         else res.status(400).send(' Incorrect Password ')
     }
 }
+
+const addChannel = async(req,res)=>{
+    try {
+        await UserChannel.create(req.body)
+        const userChannels = await userHelperFun.getUserChannels(req.body.UserID)
+        res.status(200).send(userChannels)
+    } catch (error) {
+        let errorMessage = errorHandler(error)
+            if (errorMessage) res.status(400).send(errorMessage)
+            else {
+                console.log(error)
+                res.sendStatus(500)
+            }
+    }
+}
+
+const getChannels = async(req,res)=>{
+    try {
+        const {UserID} = req.body
+        const userChannels = await userHelperFun.getUserChannels(UserID)
+        res.status(200).send(userChannels)
+    } catch (error) {
+        console.log(error)
+        res.status(500).send('Internal Server Error')
+    }
+}
+
+const removeChannel = async(req,res)=>{
+    try {
+        const removedChannels = await UserChannel.destroy({
+            where :{
+                UserID : req.body.UserID,
+                ChannelID : req.body.ChannelID
+            }
+        })
+       if(removedChannels) res.status(200).send('Channel deleted successfully')
+       else res.status(200).send('data not found')
+    } catch (error) {
+        console.log(error)
+        res.status(500).send('Internal Server Error')
+    }
+}
+
+const updateChannel = async(req,res)=>{
+    try {
+        const userChannel = await UserChannel.update(req.body,{
+            where :{
+                UserID : req.body.UserID,
+                ChannelID : req.body.ChannelID
+            }
+        })
+        if(userChannel[0] === 0) res.status(400).send('Not Found')
+        else res.status(200).send('Channel Successfully updated')
+    } catch (error) {
+        console.log(error)
+        res.status(500)
+    }
+}
+
+
 
 
 
@@ -122,5 +201,10 @@ module.exports = {
     findAll,
     remove,
     login,
-    createAdmin
+    createAdmin,
+    update,
+    addChannel,
+    getChannels,
+    removeChannel,
+    updateChannel
 }

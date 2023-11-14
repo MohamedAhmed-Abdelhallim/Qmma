@@ -27,7 +27,10 @@ const User = sequelize.define("User" , {
     },
     NationalID: DataTypes.STRING(50),
     StaffID: DataTypes.INTEGER,
-    ProfileLanguageID: DataTypes.INTEGER,
+    ProfileLanguageID: {
+        type : DataTypes.STRING(10),
+        defaultValue : 'EN'
+    },
     DefaultRoleID: DataTypes.INTEGER, //lookup data
     UserMail: {
         type: DataTypes.STRING(300),
@@ -45,7 +48,8 @@ const User = sequelize.define("User" , {
     StatusID : DataTypes.INTEGER,
     CanSeeContactNumber : DataTypes.BOOLEAN,
     CreationUserID : DataTypes.INTEGER,
-    UpdateUserID : DataTypes.INTEGER
+    UpdateUserID : DataTypes.INTEGER,
+    currentStatus : DataTypes.STRING(300)
 },{
     timestamps : false
 })
@@ -73,8 +77,10 @@ LookUpData.hasOne(User,{
 })
 
 // const queryInterface = sequelize.getQueryInterface();
-// queryInterface.addColumn('Users','currentStatus',{
-//     type : DataTypes.STRING(300)
+// queryInterface.changeColumn('Users','ProfileLanguageID',{
+//     type : DataTypes.STRING(10),
+//     defaultValue : () => "EN",
+//     allowNull : false
 // }).then(() => 'new column added').catch(err => console.log(err))
 
 User.sync()
