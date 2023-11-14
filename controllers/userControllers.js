@@ -56,7 +56,7 @@ const findAll = async (req, res) => {
 const remove = async (req, res) => {
     try {
         if (!req.body.userID) throw 3
-        const user = await User.destroy({
+        const user = await User.update({ Active: false }, {
             where: {
                 userID: req.body.userID
             }
@@ -72,20 +72,20 @@ const remove = async (req, res) => {
 
 const update = async (req, res) => {
     try {
-        const {userID}  = req.body
-        if(req.body.hasOwnProperty('UserPassword')){
+        const { userID } = req.body
+        if (req.body.hasOwnProperty('UserPassword')) {
             let userPassword = req.body.UserPassword
             userPassword = await jwtControllers.hashPassword(userPassword)
             req.body.UserPassword = userPassword
             console.log(req.body)
         }
         const user = await User.update(req.body, {
-                     where :{
-                        UserID : userID
-                    }
-              }
+            where: {
+                UserID: userID
+            }
+        }
         )
-        if(user[0] === 0) res.status(400).send('Not Found')
+        if (user[0] === 0) res.status(400).send('Not Found')
         else res.status(200).send('User Successfully updated')
     } catch (error) {
         console.log(error)
@@ -95,49 +95,61 @@ const update = async (req, res) => {
 
 
 const login = async (req, res) => {
-    const user = await User.findOne({
-        where: {
-            UserName: req.body.UserName
-        },
-        attributes: ['NameArabic', 'NameEnglish', 'UserPassword', 'isAdmin']
-    })
-    if (user == null) res.status(400).send("user not found")
-    else {
-        const auth = await bcrypt.compare(req.body.password, user.UserPassword)
-        if (auth) {
-            const token = jwtControllers.createToken(user.UserName)
-            console.log(token)
-            let companies = null;
-            if (user.isAdmin) {
-                companies = await Company.findAll({
-                    attributes: ['NameArabic', 'NameEnglish', 'CompanyID']
-                })
+    try {
+        const user = await User.findOne({
+            where: {
+                UserName: req.body.UserName
+            },
+            attributes: ['NameArabic', 'NameEnglish', 'UserPassword', 'isAdmin','CompanyID']
+        })
+        if (user == null) res.status(400).send("user not found")
+        else {
+            const auth = await bcrypt.compare(req.body.password, user.UserPassword)
+            if (auth) {
+                const token = jwtControllers.createToken(user.UserName)
+                console.log(token)
+                let companies = null;
+                let companyUsers = null;
+                if (user.isAdmin) {
+                    companies = await Company.findAll({
+                        attributes: ['NameArabic', 'NameEnglish', 'CompanyID']
+                    });
+                    if(user.CompanyID){
+                        companyUsers = await User.findAll({
+                            where: {CompanyID: user.CompanyID},
+                            attributes : ['NameArabic', 'NameEnglish','UserMail' , 'UserPhone','Active' , 'Enabled']
+                        })
+                    }
+                }
+                console.log(JSON.stringify(companies))
+                res.status(200).json([user, companies, companyUsers])
             }
-            console.log(JSON.stringify(companies))
-            res.status(200).json([user, companies])
+            else res.status(400).send(' Incorrect Password ')
         }
-        else res.status(400).send(' Incorrect Password ')
+    } catch (error) {
+        console.log(error)
+        res.status(500).send('error')
     }
 }
 
-const addChannel = async(req,res)=>{
+const addChannel = async (req, res) => {
     try {
         await UserChannel.create(req.body)
         const userChannels = await userHelperFun.getUserChannels(req.body.UserID)
         res.status(200).send(userChannels)
     } catch (error) {
         let errorMessage = errorHandler(error)
-            if (errorMessage) res.status(400).send(errorMessage)
-            else {
-                console.log(error)
-                res.sendStatus(500)
-            }
+        if (errorMessage) res.status(400).send(errorMessage)
+        else {
+            console.log(error)
+            res.sendStatus(500)
+        }
     }
 }
 
-const getChannels = async(req,res)=>{
+const getChannels = async (req, res) => {
     try {
-        const {UserID} = req.body
+        const { UserID } = req.body
         const userChannels = await userHelperFun.getUserChannels(UserID)
         res.status(200).send(userChannels)
     } catch (error) {
@@ -146,31 +158,31 @@ const getChannels = async(req,res)=>{
     }
 }
 
-const removeChannel = async(req,res)=>{
+const removeChannel = async (req, res) => {
     try {
         const removedChannels = await UserChannel.destroy({
-            where :{
-                UserID : req.body.UserID,
-                ChannelID : req.body.ChannelID
+            where: {
+                UserID: req.body.UserID,
+                ChannelID: req.body.ChannelID
             }
         })
-       if(removedChannels) res.status(200).send('Channel deleted successfully')
-       else res.status(200).send('data not found')
+        if (removedChannels) res.status(200).send('Channel deleted successfully')
+        else res.status(200).send('data not found')
     } catch (error) {
         console.log(error)
         res.status(500).send('Internal Server Error')
     }
 }
 
-const updateChannel = async(req,res)=>{
+const updateChannel = async (req, res) => {
     try {
-        const userChannel = await UserChannel.update(req.body,{
-            where :{
-                UserID : req.body.UserID,
-                ChannelID : req.body.ChannelID
+        const userChannel = await UserChannel.update(req.body, {
+            where: {
+                UserID: req.body.UserID,
+                ChannelID: req.body.ChannelID
             }
         })
-        if(userChannel[0] === 0) res.status(400).send('Not Found')
+        if (userChannel[0] === 0) res.status(400).send('Not Found')
         else res.status(200).send('Channel Successfully updated')
     } catch (error) {
         console.log(error)

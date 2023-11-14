@@ -49,7 +49,15 @@ const User = sequelize.define("User" , {
     CanSeeContactNumber : DataTypes.BOOLEAN,
     CreationUserID : DataTypes.INTEGER,
     UpdateUserID : DataTypes.INTEGER,
-    currentStatus : DataTypes.STRING(300)
+    currentStatus : DataTypes.STRING(300),
+    Active : {
+        type : DataTypes.BOOLEAN,
+        defaultValue : true
+    },
+    Enabled :{
+        type : DataTypes.BOOLEAN,
+        defaultValue : true
+    }
 },{
     timestamps : false
 })
@@ -77,10 +85,14 @@ LookUpData.hasOne(User,{
 })
 
 // const queryInterface = sequelize.getQueryInterface();
-// queryInterface.changeColumn('Users','ProfileLanguageID',{
-//     type : DataTypes.STRING(10),
-//     defaultValue : () => "EN",
-//     allowNull : false
+// queryInterface.addColumn('Users','Active',{
+//     type : DataTypes.BOOLEAN,
+//     defaultValue : () => true
+// }).then(() => 'new column added').catch(err => console.log(err))
+
+// queryInterface.addColumn('Users','Enabled',{
+//     type : DataTypes.BOOLEAN,
+//     defaultValue : () => true
 // }).then(() => 'new column added').catch(err => console.log(err))
 
 User.sync()
