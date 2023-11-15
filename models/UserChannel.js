@@ -26,7 +26,10 @@ const UserChannel = sequelize.define('UserChannel',{
         type : DataTypes.BOOLEAN,
         defaultValue : false
     },
-    MaxInteractions : DataTypes.INTEGER,
+    MaxInteractions : {
+        type :DataTypes.INTEGER,
+        defaultValue : 0
+    },
     UpdateDate :DataTypes.DATE ,
     StatusID : DataTypes.INTEGER,
     CreationUserID : DataTypes.INTEGER,
