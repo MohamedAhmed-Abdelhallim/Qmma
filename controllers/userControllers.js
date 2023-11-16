@@ -35,7 +35,7 @@ const createAdmin = async (req, res) => {
 }
 
 const find = async (req, res) => {
-    await User.findByPk(req.params['userID'])
+    await User.findByPk(req.query['userID'])
         .then(data => res.status(200).send(data))
         .catch(err => {
             console.log(err)
@@ -55,10 +55,10 @@ const findAll = async (req, res) => {
 
 const remove = async (req, res) => {
     try {
-        if (!req.body.userID) throw 3
+        if (!req.query.userID) throw 3
         const user = await User.update({ Active: false }, {
             where: {
-                userID: req.body.userID
+                userID: req.query.userID
             }
         })
         if (user) res.status(200).send('user deleted')
@@ -149,7 +149,7 @@ const addChannel = async (req, res) => {
 
 const getChannels = async (req, res) => {
     try {
-        const { UserID } = req.body
+        const { UserID } = req.query
         const userChannels = await userHelperFun.getUserChannels(UserID)
         res.status(200).send(userChannels)
     } catch (error) {
@@ -162,8 +162,8 @@ const removeChannel = async (req, res) => {
     try {
         const removedChannels = await UserChannel.destroy({
             where: {
-                UserID: req.body.UserID,
-                ChannelID: req.body.ChannelID
+                UserID: req.query.UserID,
+                ChannelID: req.query.ChannelID
             }
         })
         if (removedChannels) res.status(200).send('Channel deleted successfully')

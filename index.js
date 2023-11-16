@@ -27,6 +27,7 @@ const campaignTemplateVarRoutes = require('./routes/campaignTemplateVarRoutes')
 const campaignMessageListRoutes = require('./routes/campaignMessageListRoutes')
 const campaignResultRoutes = require('./routes/campaignResultRoutes')
 const objectContactsRoutes = require('./routes/objectContactsRoutes')
+const channelRoutes = require('./routes/channelRoutes')
 
 const app = express()
 const corsOptions = {
@@ -65,6 +66,7 @@ app.use('/campaignTemplateVar' , campaignTemplateVarRoutes)
 app.use('/campaignMessageList' , campaignMessageListRoutes)
 app.use('/campaignResult' , campaignResultRoutes)
 app.use('/api/contacts' , objectContactsRoutes)
+app.use('/api/channel' , channelRoutes)
 
 const PORT = process.env.PORT || 3002
 app.listen(PORT , () =>{

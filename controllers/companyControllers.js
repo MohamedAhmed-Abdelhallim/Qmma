@@ -13,7 +13,7 @@ const create = async (req, res) => {
 
 const find = async (req, res) => {
     
-    await Company.findByPk(req.params.companyID)
+    await Company.findByPk(req.query.companyID)
         .then(data => res.status(200).send(data))
         .catch(err => {
             console.log('error while finding company' + err)
@@ -24,7 +24,7 @@ const find = async (req, res) => {
 
 const findAll = async (req, res) => {
     try {
-        const {userID} = req.body
+        const {userID} = req.query
         const user = await User.findByPk(userID)
         if(user && user.isAdmin){
             const companies = await Company.findAll()
@@ -35,18 +35,12 @@ const findAll = async (req, res) => {
         console.log(error)
         res.send(500)
     }
-    // await Company.findAll()
-    //     .then(data => res.status(200).send(data))
-    //     .catch(err => {
-    //         console.log('error while getting all  companies ' + err)
-    //         res.status(400)
-    //     })
 }
 
 const remove = async (req, res) => {
     await Company.destroy({
         where: {
-            CompanyID: req.params.companyID
+            CompanyID: req.query.companyID
         }
     }).then(data => res.sendStatus(200).send(data))
         .catch(err => {

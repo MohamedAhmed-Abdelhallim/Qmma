@@ -84,16 +84,16 @@ LookUpData.hasOne(User,{
     onDelete : "NO ACTION"
 })
 
-const queryInterface = sequelize.getQueryInterface();
-queryInterface.addColumn('Users','Active',{
-    type : DataTypes.BOOLEAN,
-    defaultValue : () => true
-}).then(() => 'new column added').catch(err => console.log(err))
+// const queryInterface = sequelize.getQueryInterface();
+// queryInterface.addColumn('Users','Active',{
+//     type : DataTypes.BOOLEAN,
+//     defaultValue : () => true
+// }).then(() => 'new column added').catch(err => console.log(err))
 
-queryInterface.addColumn('Users','Enabled',{
-    type : DataTypes.BOOLEAN,
-    defaultValue : () => true
-}).then(() => 'new column added').catch(err => console.log(err))
+// queryInterface.addColumn('Users','Enabled',{
+//     type : DataTypes.BOOLEAN,
+//     defaultValue : () => true
+// }).then(() => 'new column added').catch(err => console.log(err))
 
 User.sync()
     .then(() => {

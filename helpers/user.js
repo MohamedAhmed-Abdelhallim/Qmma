@@ -10,7 +10,9 @@ const getUserChannels = async(userID)=>{
     })
     for(let i = 0 ; i < userChannels.length ; i++){
         let {LookupDataNameEnglish} = await LookUpData.findByPk(userChannels[i].ChannelID)
-        userChannels[i].ChannelID = LookupDataNameEnglish
+        //Object.assign(userChannels[i] , {channelName :LookupDataNameEnglish })
+        console.log(userChannels[i])
+        userChannels[i] = {...userChannels[i].dataValues , ChannelName : LookupDataNameEnglish}
     }
     return userChannels
 }
